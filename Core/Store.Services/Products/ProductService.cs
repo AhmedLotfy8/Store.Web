@@ -24,7 +24,7 @@ namespace Store.Services.Products {
 
         public async Task<ProductResponse> GetProductByIdAsync(int id) {
 
-            var product = await _unitOfWork.GetRepository<int, ProductType>().GetAsync(id);
+            var product = await _unitOfWork.GetRepository<int, Product>().GetAsync(id);
             var result = _mapper.Map<ProductResponse>(product);
 
             return result;

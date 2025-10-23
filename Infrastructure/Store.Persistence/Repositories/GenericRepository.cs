@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Store.Domain.Contracts;
 using Store.Domain.Entities;
+using Store.Domain.Entities.Products;
 using Store.Persistence.Data.Contexts;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,27 @@ namespace Store.Persistence.Repositories {
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool changeTracker = false) {
 
+
+            if (typeof(TEntity) == typeof(Product)) {
+
+                return changeTracker ?
+                    await _context.Products.Include(p => p.Brand).Include(p => p.Type).ToListAsync() as IEnumerable<TEntity>
+                    : await _context.Products.Include(p => p.Brand).Include(p => p.Type).AsNoTracking().ToListAsync() as IEnumerable<TEntity>;
+            }
+
             return changeTracker ?
                 await _context.Set<TEntity>().ToListAsync()
                 : await _context.Set<TEntity>().AsNoTracking().ToListAsync();
+
         }
 
         public async Task<TEntity?> GetAsync(Tkey key) {
-            return await _context.Set<TEntity>().FindAsync();
+
+            if (typeof(TEntity) == typeof(Product)) {
+                return await _context.Products.Include(p => p.Brand).Include(p => p.Type).FirstOrDefaultAsync(p => p.Id == key as int?) as TEntity;
+            }
+
+            return await _context.Set<TEntity>().FindAsync(key);
         }
 
         public async Task AddAsync(TEntity entity) {
@@ -29,7 +44,7 @@ namespace Store.Persistence.Repositories {
         }
 
         public void Update(TEntity entity) {
-            _context.Update(entity);    
+            _context.Update(entity);
         }
 
         public void Delete(TEntity entity) {
