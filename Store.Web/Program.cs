@@ -30,7 +30,7 @@ namespace Store.Web {
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddAutoMapper(m=>m.AddProfile(new ProductProfile()));
+            builder.Services.AddAutoMapper(m => m.AddProfile(new ProductProfile(builder.Configuration)));
 
 
 
@@ -38,6 +38,8 @@ namespace Store.Web {
 
 
             var app = builder.Build();
+
+
 
 
 
@@ -50,6 +52,7 @@ namespace Store.Web {
             #endregion
 
 
+            app.UseStaticFiles();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
