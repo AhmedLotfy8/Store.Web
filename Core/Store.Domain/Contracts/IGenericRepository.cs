@@ -10,8 +10,10 @@ namespace Store.Domain.Contracts {
 
 
         Task<IEnumerable<TEntity>> GetAllAsync(bool changeTracker = false);
+        Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<Tkey, TEntity> spec, bool changeTracker = false);
 
         Task<TEntity?> GetAsync(Tkey key);
+        Task<TEntity?> GetAsync(ISpecification<Tkey, TEntity> spec);
 
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);
