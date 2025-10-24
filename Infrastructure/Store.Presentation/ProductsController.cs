@@ -14,9 +14,9 @@ namespace Store.Presentation {
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort) {
+        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort, string? search, int? pageIndex = 1, int? pageSize = 5) {
 
-            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId, typeId, sort);
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(brandId, typeId, sort, search, pageIndex, pageSize);
 
             if (result is null) 
                 return BadRequest();
