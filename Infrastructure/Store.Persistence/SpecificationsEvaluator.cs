@@ -20,7 +20,16 @@ namespace Store.Persistence {
                 query = query.Where(spec.Criteria);
             }
 
-            query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
+            if (spec.OrderBy is not null) {
+                query = query.OrderBy(spec.OrderBy);
+            }
+
+            else if (spec.OrderByDescending is not null) {
+                query = query.OrderByDescending(spec.OrderByDescending);
+            }
+
+
+                query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
 
             return query;
         }

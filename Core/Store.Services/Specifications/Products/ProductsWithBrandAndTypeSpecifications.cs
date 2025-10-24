@@ -16,16 +16,46 @@ namespace Store.Services.Specifications.Products {
             ApplyIncludes();
         }
 
-        public ProductsWithBrandAndTypeSpecifications(int? brandId, int? typeId) : base(
-            p => 
-            (!brandId.HasValue || p.BrandId == brandId) 
-            && 
-            (!typeId.HasValue  || p.TypeId == typeId) ) {
+        public ProductsWithBrandAndTypeSpecifications(int? brandId, int? typeId, string? sort) : 
             
+            base(p =>
+            
+            (!brandId.HasValue || p.BrandId == brandId)
+            &&
+            (!typeId.HasValue || p.TypeId == typeId)) {
+
+            ApplySorting(sort);
             ApplyIncludes();
 
         }
 
+
+        private void ApplySorting(string? sort) {
+
+            if (!string.IsNullOrEmpty(sort)) {
+
+                switch (sort.ToLower()) {
+
+                    case "priceasc":
+                        AddOrderBy(p => p.Price);
+                        break;
+
+                    case "pricedesc":
+                        AddOrderByDescending(p => p.Price);
+                        break;
+
+                    default:
+                        AddOrderBy(p => p.Name);
+                        break;
+
+                }
+            }
+
+            else {
+                AddOrderBy(p => p.Name);
+            }
+
+        }
 
         private void ApplyIncludes() {
             Includes.Add(p => p.Brand);

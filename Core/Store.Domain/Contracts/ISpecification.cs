@@ -13,6 +13,10 @@ namespace Store.Domain.Contracts {
 
         Expression<Func<TEntity, bool>>? Criteria { get; set; }
 
+        public Expression<Func<TEntity,object>>? OrderBy { get; set; }
+
+        public Expression<Func<TEntity,object>>? OrderByDescending { get; set; }
+
 
     }
 }
