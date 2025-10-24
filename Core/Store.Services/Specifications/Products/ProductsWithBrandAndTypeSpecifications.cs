@@ -16,14 +16,20 @@ namespace Store.Services.Specifications.Products {
             ApplyIncludes();
         }
 
-        public ProductsWithBrandAndTypeSpecifications(int? brandId, int? typeId, string? sort) : 
+        public ProductsWithBrandAndTypeSpecifications(int? brandId, int? typeId, string? sort, string? search, int? pageIndex, int? pageSize) : 
             
             base(p =>
             
             (!brandId.HasValue || p.BrandId == brandId)
             &&
-            (!typeId.HasValue || p.TypeId == typeId)) {
+            (!typeId.HasValue || p.TypeId == typeId)
+            &&
+            (string.IsNullOrEmpty(search) || p.Name.ToLower().Contains(search.ToLower()))
+            
+            ) {
 
+
+            ApplyPagination(pageSize.Value, pageIndex.Value);
             ApplySorting(sort);
             ApplyIncludes();
 
