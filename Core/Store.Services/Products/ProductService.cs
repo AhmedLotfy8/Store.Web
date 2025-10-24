@@ -4,6 +4,7 @@ using Store.Domain.Entities.Products;
 using Store.Services.Abstractions.Products;
 using Store.Services.Specifications;
 using Store.Services.Specifications.Products;
+using Store.Shared;
 using Store.Shared.Dtos.Products;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Store.Services.Products {
     public class ProductService(IUnitOfWork _unitOfWork, IMapper _mapper) : IProductService {
 
 
-        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync(ProductQueryParameters parameters) {
+        public async Task<PaginationRespone<ProductResponse>> GetAllProductsAsync(ProductQueryParameters parameters) {
 
             //var spec = new BaseSpecifications<int, Product>(null);
             //spec.Includes.Add(p => p.Brand);
@@ -24,9 +25,15 @@ namespace Store.Services.Products {
             var spec = new ProductsWithBrandAndTypeSpecifications(parameters);
 
             var products = await _unitOfWork.GetRepository<int, Product>().GetAllAsync(spec);
+            
             var result = _mapper.Map<IEnumerable<ProductResponse>>(products);
 
-            return result;
+
+            var specCount = new ProductsCountSpecifications(parameters);
+
+            var count = await _unitOfWork.GetRepository<int,Product>().CountAsync(specCount);
+
+            return new PaginationRespone<ProductResponse>(parameters.PageIndex, parameters.PageSize, count, result);
 
         }
 
