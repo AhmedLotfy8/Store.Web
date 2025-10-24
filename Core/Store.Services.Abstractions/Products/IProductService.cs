@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Store.Services.Abstractions.Products {
     public interface IProductService {
 
-        Task<IEnumerable<ProductResponse>> GetAllProductsAsync();
+        Task<IEnumerable<ProductResponse>> GetAllProductsAsync(int? brandId, int? typeId);
     
         Task<ProductResponse> GetProductByIdAsync(int id);
 
