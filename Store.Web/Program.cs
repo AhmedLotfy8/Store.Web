@@ -6,6 +6,7 @@ using Store.Persistence.Data.Contexts;
 using Store.Services;
 using Store.Services.Abstractions;
 using Store.Services.Mapping.Products;
+using Store.Web.Middlewares;
 using System.Threading.Tasks;
 
 namespace Store.Web {
@@ -50,6 +51,9 @@ namespace Store.Web {
             await dbInitializer.InitializeAsync();
 
             #endregion
+
+
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
 
             app.UseStaticFiles();
