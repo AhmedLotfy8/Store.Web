@@ -34,9 +34,6 @@ namespace Store.Presentation {
 
             var result = await _serviceManager.ProductService.GetProductByIdAsync(id.Value);
 
-            if (result is null)
-                return NotFound();
-
             return Ok(result);
 
         }
