@@ -15,7 +15,20 @@ namespace Store.Web.Middlewares {
         public async Task InvokeAsync(HttpContext context) {
 
             try {
+
                 await _next.Invoke(context);
+
+                if (context.Response.StatusCode == 404) {
+                    context.Response.ContentType = "application/json";
+                    var response = new ErrorDetails() {
+                        StatusCode = context.Response.StatusCode,
+                        ErrorMessage = $"Endpoint {context.Request.Path} was not found!"
+                    };
+
+                    await context.Response.WriteAsJsonAsync(response);
+
+                }
+
             }
             catch (Exception ex) {
 
