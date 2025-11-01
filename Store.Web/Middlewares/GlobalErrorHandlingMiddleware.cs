@@ -1,4 +1,6 @@
-﻿using Store.Shared.ErrorModels;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Store.Domain.Exceptions.NotFound;
+using Store.Shared.ErrorModels;
 
 namespace Store.Web.Middlewares {
     public class GlobalErrorHandlingMiddleware {
@@ -17,7 +19,12 @@ namespace Store.Web.Middlewares {
             }
             catch (Exception ex) {
 
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.StatusCode = ex switch {
+
+                    NotFoundException => StatusCodes.Status404NotFound,
+                    _ => StatusCodes.Status500InternalServerError
+
+                };
 
                 context.Response.ContentType = "application/json";
 
