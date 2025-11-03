@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Store.Domain.Contracts;
 using Store.Persistence.Data.Contexts;
+using Store.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +22,10 @@ namespace Store.Persistence {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
             });
+            
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
 
             services.AddSingleton<IConnectionMultiplexer>((ServiceProvider) =>
 
