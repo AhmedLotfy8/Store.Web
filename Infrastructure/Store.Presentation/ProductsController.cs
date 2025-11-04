@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Store.Presentation.Attributes;
 using Store.Services.Abstractions;
 using Store.Shared;
 using Store.Shared.Dtos.Products;
@@ -21,6 +22,7 @@ namespace Store.Presentation {
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginationRespone<ProductResponse>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [Cache(50)]
         public async Task<ActionResult<PaginationRespone<ProductResponse>>> GetAllProducts([FromQuery] ProductQueryParameters parameters) {
 
             var result = await _serviceManager.ProductService.GetAllProductsAsync(parameters);
