@@ -9,5 +9,8 @@ namespace Store.Domain.Contracts {
     
         Task InitializeAsync();
 
+        Task InitializeIdentityAsync();
+
+
     }
 }

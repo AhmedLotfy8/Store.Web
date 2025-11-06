@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Store.Domain.Contracts;
+using Store.Domain.Entities.Identity;
 using Store.Persistence;
+using Store.Persistence.Identity.Contexts;
 using Store.Services;
 using Store.Shared.ErrorModels;
 using Store.Web.Middlewares;
@@ -15,16 +19,7 @@ namespace Store.Web.Extensions {
             services.AddInfrastructureServices(configuration);
             services.AddApplicationServices(configuration);
             services.ConfigureApiBehaviorOptions();
-
-            return services;
-        }
-
-        private static IServiceCollection AddWebServices(this IServiceCollection services) {
-
-            services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddIdentityServices();
 
             return services;
         }
@@ -49,6 +44,28 @@ namespace Store.Web.Extensions {
 
             return services;
 
+        }
+
+        private static IServiceCollection AddWebServices(this IServiceCollection services) {
+
+            services.AddControllers();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
+            return services;
+        }
+
+        private static IServiceCollection AddIdentityServices(this IServiceCollection services) {
+
+            services.AddIdentityCore<AppUser>(options => {
+
+                options.User.RequireUniqueEmail = true;
+
+            }).AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<IdentityStoreDbContext>();
+
+            return services;
         }
 
 
@@ -82,10 +99,14 @@ namespace Store.Web.Extensions {
         }
 
         private static async Task<WebApplication> SeedData(this WebApplication app) {
+           
             var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await dbInitializer.InitializeAsync();
+            await dbInitializer.InitializeIdentityAsync();
+           
             return app;
+       
         }
 
         private static WebApplication UseGlobalErrorHandling(this WebApplication app) {
