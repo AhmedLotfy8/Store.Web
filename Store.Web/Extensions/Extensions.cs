@@ -6,6 +6,7 @@ using Store.Domain.Entities.Identity;
 using Store.Persistence;
 using Store.Persistence.Identity.Contexts;
 using Store.Services;
+using Store.Shared;
 using Store.Shared.ErrorModels;
 using Store.Web.Middlewares;
 
@@ -16,10 +17,15 @@ namespace Store.Web.Extensions {
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration) {
 
             services.AddWebServices();
+            
             services.AddInfrastructureServices(configuration);
+            
             services.AddApplicationServices(configuration);
+            
             services.ConfigureApiBehaviorOptions();
             services.AddIdentityServices();
+
+            services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
 
             return services;
         }
