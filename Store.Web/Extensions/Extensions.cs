@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Store.Domain.Contracts;
 using Store.Domain.Entities.Identity;
 using Store.Persistence;
@@ -9,6 +11,7 @@ using Store.Services;
 using Store.Shared;
 using Store.Shared.ErrorModels;
 using Store.Web.Middlewares;
+using System.Text;
 
 namespace Store.Web.Extensions {
     public static class Extensions {
@@ -26,6 +29,10 @@ namespace Store.Web.Extensions {
             services.AddIdentityServices();
 
             services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
+
+
+            services.AddAuthentication(configuration);
+
 
             return services;
         }
@@ -45,6 +52,31 @@ namespace Store.Web.Extensions {
                         Errors = errors
                     };
                     return new BadRequestObjectResult(response);
+                };
+            });
+
+            return services;
+
+        }
+        
+        private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration) {
+
+            var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(opttions => {
+                opttions.TokenValidationParameters = new TokenValidationParameters() {
+
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
+
                 };
             });
 
@@ -75,7 +107,6 @@ namespace Store.Web.Extensions {
         }
 
 
-
         public static async Task<WebApplication> ConfigureMiddleWares(this WebApplication app) {
 
 
@@ -94,10 +125,11 @@ namespace Store.Web.Extensions {
 
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllers();
-
-
             return app;
 
 
