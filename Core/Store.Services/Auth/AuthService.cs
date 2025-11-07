@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Store.Domain.Entities.Identity;
 using Store.Domain.Exceptions.BadRequest;
 using Store.Domain.Exceptions.NotFound;
@@ -7,7 +8,9 @@ using Store.Services.Abstractions.Auth;
 using Store.Shared.Dtos.Auth;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +31,7 @@ namespace Store.Services.Auth {
 
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = "this is"
+                Token = await GenerateTokenAsync(user)
 
             };
 
@@ -53,10 +56,38 @@ namespace Store.Services.Auth {
 
                 DisplayName = user.DisplayName,
                 Email = user.Email,
-                Token = "this is"
+                Token = await GenerateTokenAsync(user)
 
             };
 
+        }
+        
+        private async Task<string> GenerateTokenAsync(AppUser user) {
+            
+            var authClaims = new List<Claim> {
+                new Claim(ClaimTypes.GivenName, user.DisplayName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles) {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("STRONGSecurityKEYFORAUTHENTICATIONSSTRONGSecurityKEYFORAUTHENTICATIONSSTRONGSecurityKEYFORAUTHENTICATIONSSTRONGSecurityKEYFORAUTHENTICATIONS"));
+
+            var token = new JwtSecurityToken(
+                
+                    issuer: "https://localhost:7145",
+                    audience: "MyStore",
+                    claims: authClaims,
+                    expires: DateTime.Now.AddDays(2),
+                    signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+                );
+
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
 
         }
 
