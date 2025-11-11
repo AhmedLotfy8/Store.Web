@@ -22,6 +22,7 @@ namespace Store.Presentation {
 
         }
 
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request) {
 
@@ -29,6 +30,8 @@ namespace Store.Presentation {
             return Ok(result);
 
         }
+
+
 
 
 
