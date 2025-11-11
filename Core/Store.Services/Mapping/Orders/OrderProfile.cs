@@ -25,6 +25,8 @@ namespace Store.Services.Mapping.Orders {
                 .ForMember(d => d.PictureUrl, o => o.MapFrom(s => s.Product.PictureUrl));
 
 
+            CreateMap<DeliveryMethod, DeliveryMethodResponse>();
+
         }
 
 
