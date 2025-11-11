@@ -13,7 +13,6 @@ namespace Store.Persistence.Repositories {
     public class GenericRepository<Tkey, TEntity>(StoreDbContext _context) : IGenericRepository<Tkey, TEntity> where TEntity : BaseEntity<Tkey> {
 
 
-
         public async Task<IEnumerable<TEntity>> GetAllAsync(bool changeTracker = false) {
 
 
