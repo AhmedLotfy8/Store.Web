@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Store.Services.Abstractions;
 using Store.Services.Mapping.Baskets;
+using Store.Services.Mapping.Orders;
 using Store.Services.Mapping.Products;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Store.Services {
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddAutoMapper(m => m.AddProfile(new ProductProfile(configuration)));
             services.AddAutoMapper(m => m.AddProfile(new BasketProfile()));
+            services.AddAutoMapper(m => m.AddProfile(new OrderProfile()));
 
             return services;
 
