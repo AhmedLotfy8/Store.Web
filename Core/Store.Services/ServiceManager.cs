@@ -36,7 +36,7 @@ namespace Store.Services {
 
         public ICacheService CacheService { get; } = new CacheService(_cacheRepository);
 
-        public IAuthService AuthService { get; } = new AuthService(_userManager, options);
+        public IAuthService AuthService { get; } = new AuthService(_userManager, options, _mapper);
 
         public IOrderService OrderService { get; } = new OrderService(_unitOfWork, _mapper, _basketRepository);
     }
