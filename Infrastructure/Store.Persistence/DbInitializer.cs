@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Store.Domain.Contracts;
 using Store.Domain.Entities.Identity;
+using Store.Domain.Entities.Orders;
 using Store.Domain.Entities.Products;
 using Store.Persistence.Data.Contexts;
 using Store.Persistence.Identity.Contexts;
@@ -27,6 +28,18 @@ namespace Store.Persistence {
 
             if (_context.Database.GetPendingMigrationsAsync().GetAwaiter().GetResult().Any()) {
                 await _context.Database.MigrateAsync();
+            }
+
+
+            if (!_context.DeliveryMethods.Any()) {
+
+                var deliveryData = await File.ReadAllTextAsync(@"..\Infrastructure\Store.Persistence\Data\DataSeeding\delivery.json");
+                var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryData);
+
+                if (deliveryMethods is not null && deliveryMethods.Count > 0) {
+                    await _context.DeliveryMethods.AddRangeAsync(deliveryMethods);
+                }
+
             }
 
 
