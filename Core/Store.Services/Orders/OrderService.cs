@@ -64,26 +64,28 @@ namespace Store.Services.Orders {
 
         public async Task<IEnumerable<DeliveryMethodResponse>> GetAllDeliveryMethodsAsync() {
 
-            var deliveryMethods =await _unitOfWork.GetRepository<int, DeliveryMethod>().GetAllAsync();
+            var deliveryMethods = await _unitOfWork.GetRepository<int, DeliveryMethod>().GetAllAsync();
             return _mapper.Map<IEnumerable<DeliveryMethodResponse>>(deliveryMethods);
-        
+
         }
 
         public async Task<OrderResponse?> GetOrderByIdForSpecificUserAsync(Guid id, string userEmail) {
 
             var spec = new OrderSpecifications(id, userEmail);
-            var order =  await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
+            var order = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
+
+            if (order is null) throw new OrderNotFoundException(id);
 
             return _mapper.Map<OrderResponse>(order);
         }
 
         public async Task<IEnumerable<OrderResponse>> GetOrdersForSpecificUserAsync(string userEmail) {
-            
+
             var spec = new OrderSpecifications(userEmail);
             var order = await _unitOfWork.GetRepository<Guid, Order>().GetAllAsync(spec);
 
             return _mapper.Map<IEnumerable<OrderResponse>>(order);
         }
- 
+
     }
 }
