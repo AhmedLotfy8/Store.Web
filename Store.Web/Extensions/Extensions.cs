@@ -20,11 +20,11 @@ namespace Store.Web.Extensions {
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration) {
 
             services.AddWebServices();
-            
+
             services.AddInfrastructureServices(configuration);
-            
+
             services.AddApplicationServices(configuration);
-            
+
             services.ConfigureApiBehaviorOptions();
             services.AddIdentityServices();
 
@@ -32,6 +32,12 @@ namespace Store.Web.Extensions {
 
 
             services.AddAuthentication(configuration);
+
+            services.AddCors(options => {
+                options.AddPolicy("AllowAll", policy => {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
 
 
             return services;
@@ -58,7 +64,7 @@ namespace Store.Web.Extensions {
             return services;
 
         }
-        
+
         private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration) {
 
             var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
@@ -126,6 +132,8 @@ namespace Store.Web.Extensions {
 
             app.UseHttpsRedirection();
 
+            app.UseCors("AllowAll");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -137,14 +145,14 @@ namespace Store.Web.Extensions {
         }
 
         private static async Task<WebApplication> SeedData(this WebApplication app) {
-           
+
             var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
             await dbInitializer.InitializeAsync();
             await dbInitializer.InitializeIdentityAsync();
-           
+
             return app;
-       
+
         }
 
         private static WebApplication UseGlobalErrorHandling(this WebApplication app) {
