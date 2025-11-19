@@ -2,6 +2,7 @@
 using Store.Services.Abstractions.Baskets;
 using Store.Services.Abstractions.Cache;
 using Store.Services.Abstractions.Orders;
+using Store.Services.Abstractions.Payments;
 using Store.Services.Abstractions.Products;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ namespace Store.Services.Abstractions {
         
         IOrderService OrderService { get; }
         
+        IPaymentService PaymentService { get; }
+        
 
     }
+
 }

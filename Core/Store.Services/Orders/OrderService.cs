@@ -47,12 +47,17 @@ namespace Store.Services.Orders {
                 orderItems.Add(orderItem);
             }
 
-
             var subTotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
 
 
-            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal, basket.PaymentIntentId);
+            var spec = new OrderWithPaymentIntentSpecifications(basket.PaymentIntentId);
+            var existsOrder = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
 
+            if (existsOrder is not null)
+                _unitOfWork.GetRepository<Guid, Order>().Delete(existsOrder);
+
+
+            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal, basket.PaymentIntentId);
 
             await _unitOfWork.GetRepository<Guid, Order>().AddAsync(order);
             var count = await _unitOfWork.SaveChangesAsync();
