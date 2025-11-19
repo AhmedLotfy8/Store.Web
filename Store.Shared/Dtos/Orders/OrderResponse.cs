@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.Domain.Entities.Orders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,10 @@ namespace Store.Shared.Dtos.Orders {
         public decimal Subtotal { get; set; }
 
         public decimal Total { get; set; }
+
+        public string? PaymentIntentId { get; set; }
+        public OrderStatus Status { get; set; }
+
 
     }
 }
