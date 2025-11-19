@@ -13,14 +13,14 @@ namespace Store.Domain.Entities.Orders {
             
         }
 
-        public Order(string userEmail, OrderAddress shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subtotal) {
-        
+        public Order(string userEmail, OrderAddress shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subtotal, string? paymentIntentId) {
+
             UserEmail = userEmail;
             ShippingAddress = shippingAddress;
             DeliveryMethod = deliveryMethod;
             Items = items;
             Subtotal = subtotal;
-        
+            PaymentIntentId = paymentIntentId;
         }
 
         public string UserEmail { get; set; }
@@ -45,7 +45,7 @@ namespace Store.Domain.Entities.Orders {
         //public decimal Total { get; set; }
         #endregion
 
-
+        public string? PaymentIntentId { get; set; }
 
     }
 }

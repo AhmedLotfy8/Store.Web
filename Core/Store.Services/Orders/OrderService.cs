@@ -51,7 +51,7 @@ namespace Store.Services.Orders {
             var subTotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
 
 
-            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal);
+            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal, basket.PaymentIntentId);
 
 
             await _unitOfWork.GetRepository<Guid, Order>().AddAsync(order);
