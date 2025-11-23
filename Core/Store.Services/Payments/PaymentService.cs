@@ -5,7 +5,10 @@ using Store.Domain.Entities.Orders;
 using Store.Domain.Entities.Products;
 using Store.Domain.Exceptions.NotFound;
 using Store.Services.Abstractions.Payments;
+using Store.Services.Orders;
+using Store.Services.Specifications.Orders;
 using Store.Shared.Dtos.Baskets;
+using Store.Shared.Dtos.Orders;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -81,6 +84,26 @@ namespace Store.Services.Payments {
 
             return _mapper.Map<BasketDto>(basket);
 
+        }
+
+        public async Task<OrderResponse> UpdatePaymentIntentForSucceedOrFailed(string paymentIntentId, bool flag) {
+            var spec = new OrderWithPaymentIntentSpecifications(paymentIntentId);
+
+            var order = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
+            if (order is null) throw new OrderNotFoundException(paymentIntentId);
+
+            if (flag) {
+                order.Status = OrderStatus.PaymentSuccess;
+            }
+
+            else {
+                order.Status = OrderStatus.PaymentFailed;
+            }
+
+            _unitOfWork.GetRepository<Guid, Order>().Update(order);
+
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<OrderResponse>(order);
         }
 
 

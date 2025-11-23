@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Store.Services.Abstractions;
 using Stripe;
 using System;
@@ -15,6 +16,7 @@ namespace Store.Presentation {
         IServiceManager _serviceManager) : ControllerBase {
 
         [HttpPost("{basketId}")]
+        [Authorize]
         public async Task<IActionResult> CreatePaymentIntent(string basketId) {
 
             var result = await _serviceManager.PaymentService.CreatePaymentIntentAsync(basketId);
@@ -32,16 +34,18 @@ namespace Store.Presentation {
             var stripeEvent = EventUtility.ParseEvent(json);
             var signatureHeader = Request.Headers["Stripe-Signature"];
 
-            stripeEvent = EventUtility.ConstructEvent(json,
-                    signatureHeader, endpointSecret);
+            stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);
+
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+
 
             if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded) {
-
+               await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, true);
 
             }
 
             else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed) {
-
+                await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, false);
 
             }
 
