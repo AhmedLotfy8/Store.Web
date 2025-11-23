@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Store.Services.Abstractions;
 using Stripe;
 using System;
@@ -13,7 +14,8 @@ namespace Store.Presentation {
     [ApiController]
     [Route("api/[controller]")]
     public class PaymentsController(
-        IServiceManager _serviceManager) : ControllerBase {
+        IServiceManager _serviceManager,
+        IConfiguration _configuration) : ControllerBase {
 
         [HttpPost("{basketId}")]
         [Authorize]
@@ -29,12 +31,10 @@ namespace Store.Presentation {
         [HttpPost]
         public async Task<IActionResult> Index() {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            const string endpointSecret = "whsec_1de299b6ddba262e522bf07506efdf1b0d0bb2324464687498a79098c27c4d4d";
+            var endpointSecret = _configuration["StripeOptions:WebhookSecret"];
 
-            var stripeEvent = EventUtility.ParseEvent(json);
             var signatureHeader = Request.Headers["Stripe-Signature"];
-
-            stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);
+            var stripeEvent = EventUtility.ConstructEvent(json, signatureHeader, endpointSecret);
 
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
 

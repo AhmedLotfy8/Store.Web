@@ -86,19 +86,13 @@ namespace Store.Services.Payments {
 
         }
 
-        public async Task<OrderResponse> UpdatePaymentIntentForSucceedOrFailed(string paymentIntentId, bool flag) {
+        public async Task<OrderResponse> UpdatePaymentIntentForSucceedOrFailed(string paymentIntentId, OrderStatus status) {
             var spec = new OrderWithPaymentIntentSpecifications(paymentIntentId);
 
             var order = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
             if (order is null) throw new OrderNotFoundException(paymentIntentId);
 
-            if (flag) {
-                order.Status = OrderStatus.PaymentSuccess;
-            }
-
-            else {
-                order.Status = OrderStatus.PaymentFailed;
-            }
+            order.Status = status;
 
             _unitOfWork.GetRepository<Guid, Order>().Update(order);
 
