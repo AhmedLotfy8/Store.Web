@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Store.Domain.Entities.Orders;
 using Store.Services.Abstractions;
 using Stripe;
 using System;
@@ -40,12 +41,12 @@ namespace Store.Presentation {
 
 
             if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded) {
-               await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, true);
+               await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, OrderStatus.PaymentSuccess);
 
             }
 
             else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed) {
-                await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, false);
+                await _serviceManager.PaymentService.UpdatePaymentIntentForSucceedOrFailed(paymentIntent.Id, OrderStatus.PaymentFailed);
 
             }
 
