@@ -13,7 +13,7 @@ namespace Store.Services.Abstractions.Payments {
 
         Task<BasketDto?> CreatePaymentIntentAsync(string basketId);
 
-        Task<OrderResponse> UpdatePaymentIntentForSucceedOrFailed(string paymentIntentId, bool flag);
+        Task<OrderResponse> UpdatePaymentIntentForSucceedOrFailed(string paymentIntentId, OrderStatus status);
 
     }
 }
